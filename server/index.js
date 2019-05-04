@@ -12,6 +12,8 @@ const app = express()
 const socketio = require('socket.io')
 module.exports = app
 
+
+
 // This is a global Mocha hook, used for resource cleanup.
 // Otherwise, Mocha v4+ never quits after tests.
 if (process.env.NODE_ENV === 'test') {
@@ -122,3 +124,32 @@ if (require.main === module) {
 } else {
   createApp()
 }
+
+const https = require('https');
+
+let interval = 10000
+
+function ping() {
+  https.get('https://contours-nyc.herokuapp.com', (resp) => {
+    let data = '';
+
+    // A chunk of data has been recieved.
+    resp.on('data', (chunk) => {
+      data += chunk;
+    });
+
+    // The whole response has been received. Print out the result.
+    // resp.on('end', () => {
+    //   console.log(data);
+    // });
+
+  }).on("error", (err) => {
+    console.log("Error: " + err.message);
+  });
+}
+
+// function getRandomArbitrary(min, max) {
+//   return Math.random() * (max - min) + min;
+// }
+setInterval(ping, interval)
+
