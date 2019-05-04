@@ -15,6 +15,7 @@ import {
   Sidebar,
   Visibility,
 } from 'semantic-ui-react'
+import {TourModalButton} from './'
 
 const getWidth = () => {
   const isSSR = typeof window === 'undefined'
@@ -27,7 +28,7 @@ const HomepageHeading = ({ mobile }) => (
   <Container text>
     <Header
       as='h1'
-      content='Chinatown Narrative Tours'
+      content='Chinatown: Our Narrative Tours'
       inverted
       style={{
         fontSize: mobile ? '2em' : '4em',
@@ -46,10 +47,7 @@ const HomepageHeading = ({ mobile }) => (
         marginTop: mobile ? '0.5em' : '1.5em',
       }}
     />
-    <Button primary size='huge'>
-    Go on a Tour
-      <Icon name='right arrow' />
-    </Button>
+    <TourModalButton />
   </Container>
 )
 
@@ -58,14 +56,21 @@ HomepageHeading.propTypes = {
 }
 
 class DesktopContainer extends Component {
-  state = {}
+  state = { 
+      activeItem: 'home'
+  }
+
+  handleItemClick = (e, { name }) => {
+      this.setState({ activeItem: name })
+      document.querySelector(`#${name}`).scrollIntoView({ behavior: 'smooth' })
+  }
 
   hideFixedMenu = () => this.setState({ fixed: false })
   showFixedMenu = () => this.setState({ fixed: true })
 
   render() {
     const { children } = this.props
-    const { fixed } = this.state
+    const { fixed, activeItem } = this.state
 
     return (
       <Responsive getWidth={getWidth} minWidth={Responsive.onlyTablet.minWidth}>
@@ -75,6 +80,7 @@ class DesktopContainer extends Component {
           onBottomPassedReverse={this.hideFixedMenu}
         >
           <Segment
+            id='home'
             inverted
             textAlign='center'
             style={{ minHeight: 700, padding: '1em 0em' }}
@@ -88,12 +94,12 @@ class DesktopContainer extends Component {
               size='large'
             >
               <Container>
-                <Menu.Item as='a' active>
+                <Menu.Item as='a' name='home' active={activeItem === 'home'} onClick={this.handleItemClick}>
                   Home
                 </Menu.Item>
-                <Menu.Item as='a'>Stories</Menu.Item>
-                <Menu.Item as='a'>Map</Menu.Item>
-                <Menu.Item as='a'>About</Menu.Item>
+                <Menu.Item as='a' name='about' active={activeItem === 'about'} onClick={this.handleItemClick}>About</Menu.Item>
+                <Menu.Item as='a' name='blog' active={activeItem === 'blog'} onClick={this.handleItemClick}>Blog</Menu.Item>
+                <Menu.Item as='a' name='map' active={activeItem === 'map'} onClick={this.handleItemClick}>Map</Menu.Item>
                 <Menu.Item position='right'>
                   <Button as='a' inverted={!fixed}>
                     Donate
@@ -201,7 +207,7 @@ ResponsiveContainer.propTypes = {
 
 const HomepageLayout = () => (
   <ResponsiveContainer>
-    <Segment style={{ padding: '8em 0em' }} vertical>
+    <Segment id='about' style={{ padding: '8em 0em' }} vertical>
       <Grid container stackable verticalAlign='middle'>
         <Grid.Row>
           <Grid.Column width={8}>
@@ -250,7 +256,7 @@ const HomepageLayout = () => (
         </Grid.Row>
       </Grid>
     </Segment>
-    <Segment style={{ padding: '8em 0em' }} vertical>
+    <Segment id='blog' style={{ padding: '8em 0em' }} vertical>
       <Container text>
         <Header as='h3' style={{ fontSize: '2em' }}>
         Defamiliarizing Space (and My Intro to Critical Geography)
